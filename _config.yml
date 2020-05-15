@@ -20,7 +20,7 @@ title                    : "Arjun Gangwar"
 title_separator          : "-"
 subtitle                 : # site tagline that appears below site title in masthead
 name                     : "Arjun Gangwar"
-description              : "This my Portfolio."
+description              : "Welcome to my blog. Here, we will discuss Machine Learning and Deep Learning fundamentals."
 url                      : # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
