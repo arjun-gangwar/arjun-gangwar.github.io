@@ -1,10 +1,10 @@
 ---
-layout: archive
+layout: year_archive
 permalink: /posts/
-title: "Posts by Tags"
+title: "Posts by Year"
 author_profile: true
 ---
-{% include group-by-array collection=site.posts field="tags" %}
+{% include group-by-array collection=site.posts field="year" %}
 
 {% for tag in group_names %}
   {% assign posts = group_items[forloop.index0] %}
