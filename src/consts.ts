@@ -1,13 +1,13 @@
 export const SITE_TITLE = 'Arjun Gangwar';
 export const SITE_DESCRIPTION =
   'AI researcher at IIT Madras working on speech: text-to-speech, speech recognition, and speech-to-speech translation.';
-export const SITE_URL = 'https://arjungangwar.github.io';
+export const SITE_URL = 'https://arjun-gangwar.github.io';
 
 export const SOCIALS = {
   email: 'arjungangwar@gmail.com',
   scholar: 'https://scholar.google.com/citations?user=FfOAhbsAAAAJ&hl=en',
   // TODO: replace with your actual usernames
-  github: 'https://github.com/arjungangwar',
+  github: 'https://github.com/arjun-gangwar',
   linkedin: 'https://www.linkedin.com/in/arjungangwar',
   twitter: 'https://x.com/arjungangwar',
 };
@@ -17,7 +17,7 @@ export const SOCIALS = {
 // (Announcements type), install https://github.com/apps/giscus, then copy
 // the generated IDs from giscus.app here.
 export const GISCUS = {
-  repo: 'arjungangwar/arjungangwar.github.io',
+  repo: 'arjun-gangwar/arjun-gangwar.github.io',
   repoId: 'TODO_REPO_ID',
   category: 'Blog Comments',
   categoryId: 'TODO_CATEGORY_ID',

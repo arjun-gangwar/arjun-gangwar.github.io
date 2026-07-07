@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://arjungangwar.github.io/sitemap-index.xml
+Sitemap: https://arjun-gangwar.github.io/sitemap-index.xml

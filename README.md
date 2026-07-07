@@ -1,4 +1,4 @@
-# arjungangwar.github.io
+# arjun-gangwar.github.io
 
 Personal academic website — Astro static site with a blog (KaTeX math, tags,
 Pagefind search, giscus comments) and GoatCounter analytics.
@@ -52,7 +52,7 @@ arXiv/PDF links and a copy-BibTeX button per entry.
 
 ## One-time external setup
 
-1. **GitHub Pages**: create public repo `arjungangwar/arjungangwar.github.io`,
+1. **GitHub Pages**: create public repo `arjun-gangwar/arjun-gangwar.github.io`,
    push `main`, then Settings → Pages → Source: **GitHub Actions**.
 2. **giscus** (comments): on that repo enable Discussions, create a
    "Blog Comments" category (Announcements type), install
