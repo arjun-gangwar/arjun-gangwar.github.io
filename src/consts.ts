@@ -18,9 +18,9 @@ export const SOCIALS = {
 // the generated IDs from giscus.app here.
 export const GISCUS = {
   repo: 'arjun-gangwar/arjun-gangwar.github.io',
-  repoId: 'TODO_REPO_ID',
+  repoId: 'R_kgDOTQwV-Q',
   category: 'Blog Comments',
-  categoryId: 'TODO_CATEGORY_ID',
+  categoryId: 'DIC_kwDOTQwV-c4DAtWw',
 };
 
 // GoatCounter (analytics) — sign up at https://www.goatcounter.com and set
