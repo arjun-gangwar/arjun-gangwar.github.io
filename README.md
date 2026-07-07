@@ -1,43 +1,53 @@
-# Astro Starter Kit: Minimal
+# arjungangwar.github.io
 
-```sh
-npm create astro@latest -- --template minimal
+Personal academic website — Astro static site with a blog (KaTeX math, tags,
+Pagefind search, giscus comments) and GoatCounter analytics.
+
+## Commands
+
+| Command | Action |
+| --- | --- |
+| `npm run dev` | Dev server at `localhost:4321` (drafts visible, no search) |
+| `npm run build` | Build to `dist/` + build the Pagefind search index |
+| `npm run preview` | Serve the built site (search works here) |
+
+## Writing a post
+
+Add a `.md` or `.mdx` file to `src/content/blog/`:
+
+```yaml
+---
+title: 'Post title'
+description: 'One-line summary (used in listings, RSS, search).'
+date: 2026-07-07
+tags: [speech, math]
+draft: true   # remove to publish
+---
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Math: `$inline$` and `$$display$$` (rendered at build time with KaTeX).
 
-## 🚀 Project Structure
+## Site content
 
-Inside of your Astro project, you'll see the following folders and files:
+- Bio / landing page: `src/pages/index.astro`
+- News items: `src/data/updates.ts`
+- Social links, giscus and GoatCounter IDs: `src/consts.ts`
+- Headshot: drop `public/photo.jpg` and update the `src` in `index.astro`
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+## One-time external setup
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+1. **GitHub Pages**: create public repo `arjungangwar/arjungangwar.github.io`,
+   push `main`, then Settings → Pages → Source: **GitHub Actions**.
+2. **giscus** (comments): on that repo enable Discussions, create a
+   "Blog Comments" category (Announcements type), install
+   [the giscus app](https://github.com/apps/giscus), then copy `repoId` /
+   `categoryId` from [giscus.app](https://giscus.app) into `src/consts.ts`.
+3. **GoatCounter** (analytics): sign up at
+   [goatcounter.com](https://www.goatcounter.com), set your code in
+   `src/consts.ts`. Dashboard shows views, countries, and time on page.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Moving off GitHub Pages later
 
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+The site is pure static output. Change `site` in `astro.config.mjs`, replace
+the deploy job with an `rsync dist/ server:/var/www/site`, and add
+`error_page 404 /404.html;` to nginx. Nothing else assumes GitHub Pages.
