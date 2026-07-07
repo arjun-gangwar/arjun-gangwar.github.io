@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SocialLinks from '../components/SocialLinks.astro';
+import Updates from '../components/Updates.astro';
+---
+
+<BaseLayout>
+  <section class="intro">
+    {/* Placeholder — drop your headshot at public/photo.jpg and change src */}
+    <img
+      src="/photo.svg"
+      alt="Photo of Arjun Gangwar"
+      width="150"
+      height="150"
+      class="headshot"
+    />
+    <div>
+      <h1>Arjun Gangwar</h1>
+      <p>
+        I am an AI researcher at the <a href="https://www.iitm.ac.in/">Indian
+        Institute of Technology, Madras</a>, working on speech technology at
+        SPRING Lab. My research focuses on <strong>text-to-speech</strong>,
+        <strong>automatic speech recognition</strong>, and
+        <strong>speech-to-speech translation</strong>, with a particular
+        interest in generative models and low-resource Indian languages.
+      </p>
+      <p>
+        Recent work includes neural audio codecs, conditional flow matching for
+        dysarthric speech, and multilingual speech corpora for Indian
+        languages.
+      </p>
+      <SocialLinks />
+    </div>
+  </section>
+
+  <h2>Updates</h2>
+  <Updates />
+</BaseLayout>
+
+<style>
+  .intro {
+    display: flex;
+    gap: 1.75rem;
+    align-items: flex-start;
+    margin-top: 1rem;
+  }
+
+  .intro h1 {
+    margin-top: 0;
+  }
+
+  .headshot {
+    border-radius: 10px;
+    flex-shrink: 0;
+    object-fit: cover;
+  }
+
+  @media (max-width: 600px) {
+    .intro {
+      flex-direction: column;
+    }
+  }
+</style>

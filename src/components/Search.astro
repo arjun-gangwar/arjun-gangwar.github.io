@@ -1,0 +1,38 @@
+<div id="search"></div>
+
+<script>
+  // Pagefind assets exist only in the built site (npm run build), not in dev.
+  // @ts-expect-error -- generated at build time by pagefind
+  const load = () => import(/* @vite-ignore */ '/pagefind/pagefind-ui.js');
+  load()
+    .then(() => {
+      // @ts-expect-error -- PagefindUI is a global from the script above
+      new PagefindUI({
+        element: '#search',
+        showSubResults: true,
+        showImages: false,
+      });
+    })
+    .catch(() => {
+      const el = document.getElementById('search');
+      if (el && import.meta.env.DEV) {
+        el.innerHTML =
+          '<p class="muted" style="font-size:0.85rem">Search is available in the built site only (npm run build && npm run preview).</p>';
+      }
+    });
+</script>
+
+<style is:global>
+  #search {
+    margin: 1.25rem 0;
+    --pagefind-ui-scale: 0.85;
+    --pagefind-ui-primary: var(--accent);
+    --pagefind-ui-text: var(--text);
+    --pagefind-ui-background: var(--bg);
+    --pagefind-ui-border: var(--border);
+    --pagefind-ui-tag: var(--bg-muted);
+    --pagefind-ui-border-width: 1px;
+    --pagefind-ui-border-radius: 8px;
+    --pagefind-ui-font: inherit;
+  }
+</style>

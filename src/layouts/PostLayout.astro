@@ -1,0 +1,63 @@
+---
+import 'katex/dist/katex.min.css';
+import BaseLayout from './BaseLayout.astro';
+import Giscus from '../components/Giscus.astro';
+import type { Post } from '../lib/posts';
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const { title, description, date, updated, tags, draft } = post.data;
+
+const fmt = new Intl.DateTimeFormat('en', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout title={title} description={description}>
+  <article data-pagefind-body>
+    <header>
+      <h1>{title}</h1>
+      <p class="meta muted">
+        <time datetime={date.toISOString()}>{fmt.format(date)}</time>
+        {updated && <span> · updated {fmt.format(updated)}</span>}
+        {draft && <span class="tag">draft</span>}
+      </p>
+      {
+        tags.length > 0 && (
+          <p class="tags" data-pagefind-ignore>
+            {tags.map((tag) => (
+              <a class="tag" href={`/tags/${tag}`}>{tag}</a>
+            ))}
+          </p>
+        )
+      }
+    </header>
+    <slot />
+  </article>
+
+  <hr />
+  <Giscus />
+</BaseLayout>
+
+<style>
+  article header h1 {
+    margin-bottom: 0.4rem;
+  }
+
+  .meta {
+    margin: 0 0 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .tags {
+    display: flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    margin: 0;
+  }
+</style>

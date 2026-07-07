@@ -1,0 +1,35 @@
+---
+import { SOCIALS } from '../consts';
+
+const links = [
+  { label: 'Email', href: `mailto:${SOCIALS.email}` },
+  { label: 'Google Scholar', href: SOCIALS.scholar },
+  { label: 'GitHub', href: SOCIALS.github },
+  { label: 'LinkedIn', href: SOCIALS.linkedin },
+  { label: 'X', href: SOCIALS.twitter },
+];
+---
+
+<ul class="socials">
+  {
+    links.map(({ label, href }) => (
+      <li>
+        <a href={href} target={href.startsWith('mailto:') ? undefined : '_blank'} rel="noopener">
+          {label}
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .socials {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.1rem;
+    font-size: 0.92rem;
+  }
+</style>

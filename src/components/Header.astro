@@ -1,0 +1,67 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+import { SITE_TITLE } from '../consts';
+
+const path = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === '/' ? path === '/' : path.startsWith(href);
+---
+
+<header>
+  <nav>
+    <a href="/" class="site-title">{SITE_TITLE}</a>
+    <div class="links">
+      <a href="/" class:list={{ active: isActive('/') }}>About</a>
+      <a href="/blog" class:list={{ active: isActive('/blog') }}>Blog</a>
+      <a href="/tags" class:list={{ active: isActive('/tags') }}>Tags</a>
+      <ThemeToggle />
+    </div>
+  </nav>
+</header>
+
+<style>
+  header {
+    border-bottom: 1px solid var(--border);
+  }
+
+  nav {
+    max-width: 44rem;
+    margin: 0 auto;
+    padding: 0.9rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .site-title {
+    font-weight: 650;
+    color: var(--text);
+  }
+
+  .site-title:hover {
+    text-decoration: none;
+    color: var(--accent);
+  }
+
+  .links {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+  }
+
+  .links a {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+
+  .links a:hover {
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .links a.active {
+    color: var(--text);
+    font-weight: 550;
+  }
+</style>

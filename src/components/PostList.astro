@@ -1,0 +1,78 @@
+---
+import type { Post } from '../lib/posts';
+
+interface Props {
+  posts: Post[];
+}
+
+const { posts } = Astro.props;
+
+const byYear = new Map<number, Post[]>();
+for (const post of posts) {
+  const year = post.data.date.getFullYear();
+  if (!byYear.has(year)) byYear.set(year, []);
+  byYear.get(year)!.push(post);
+}
+
+const fmt = new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric' });
+---
+
+{
+  [...byYear.entries()].map(([year, yearPosts]) => (
+    <section>
+      <h2 class="year muted">{year}</h2>
+      <ul>
+        {yearPosts.map((post) => (
+          <li>
+            <span class="date muted">{fmt.format(post.data.date)}</span>
+            <div>
+              <a href={`/blog/${post.id}`}>{post.data.title}</a>
+              {post.data.draft && <span class="tag">draft</span>}
+              {post.data.tags.length > 0 && (
+                <span class="tags">
+                  {post.data.tags.map((tag) => (
+                    <a class="tag" href={`/tags/${tag}`}>{tag}</a>
+                  ))}
+                </span>
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))
+}
+
+<style>
+  .year {
+    font-size: 1rem;
+    font-weight: 550;
+    margin: 1.75rem 0 0.5rem;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  li {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.55rem;
+  }
+
+  .date {
+    flex: 0 0 3.6rem;
+    font-size: 0.85rem;
+    padding-top: 0.12rem;
+    white-space: nowrap;
+  }
+
+  .tags {
+    margin-left: 0.5rem;
+    display: inline-flex;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+  }
+</style>
