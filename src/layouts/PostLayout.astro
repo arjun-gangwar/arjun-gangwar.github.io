@@ -1,30 +1,74 @@
 ---
 import 'katex/dist/katex.min.css';
+import type { MarkdownHeading } from 'astro';
 import BaseLayout from './BaseLayout.astro';
 import Giscus from '../components/Giscus.astro';
-import type { Post } from '../lib/posts';
+import ViewCounter from '../components/ViewCounter.astro';
+import PostList from '../components/PostList.astro';
+import { SITE_TITLE } from '../consts';
+import {
+  readingTime,
+  getRelatedPosts,
+  getSeriesPosts,
+  type Post,
+} from '../lib/posts';
 
 interface Props {
   post: Post;
+  headings?: MarkdownHeading[];
 }
 
-const { post } = Astro.props;
-const { title, description, date, updated, tags, draft } = post.data;
+const { post, headings = [] } = Astro.props;
+const { title, description, date, updated, tags, draft, series } = post.data;
+
+const minutes = readingTime(post.body);
+const related = await getRelatedPosts(post);
+const seriesPosts = await getSeriesPosts(post);
+const partIndex = seriesPosts.findIndex((p) => p.id === post.id);
+const toc = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 
 const fmt = new Intl.DateTimeFormat('en', {
   year: 'numeric',
   month: 'long',
   day: 'numeric',
 });
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description,
+  datePublished: date.toISOString(),
+  ...(updated && { dateModified: updated.toISOString() }),
+  author: {
+    '@type': 'Person',
+    name: SITE_TITLE,
+    url: Astro.site?.toString(),
+  },
+  keywords: tags.join(', '),
+};
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout
+  title={title}
+  description={description}
+  ogImage={`/og/${post.id}.png`}
+  ogType="article"
+>
+  <script
+    slot="head"
+    type="application/ld+json"
+    set:html={JSON.stringify(jsonLd)}
+  />
+
   <article data-pagefind-body>
     <header>
       <h1>{title}</h1>
-      <p class="meta muted">
+      <p class="meta muted" data-pagefind-ignore>
         <time datetime={date.toISOString()}>{fmt.format(date)}</time>
         {updated && <span> · updated {fmt.format(updated)}</span>}
+        <span> · {minutes} min read</span>
+        <ViewCounter />
         {draft && <span class="tag">draft</span>}
       </p>
       {
@@ -37,12 +81,77 @@ const fmt = new Intl.DateTimeFormat('en', {
         )
       }
     </header>
+
+    {
+      series && seriesPosts.length > 1 && (
+        <aside class="series" data-pagefind-ignore>
+          <p>
+            This post is part {partIndex + 1} of the series
+            <strong> {series}</strong>:
+          </p>
+          <ol>
+            {seriesPosts.map((p) => (
+              <li>
+                {p.id === post.id ? (
+                  <span>{p.data.title} (this post)</span>
+                ) : (
+                  <a href={`/blog/${p.id}`}>{p.data.title}</a>
+                )}
+              </li>
+            ))}
+          </ol>
+        </aside>
+      )
+    }
+
+    {
+      toc.length > 1 && (
+        <details class="toc" data-pagefind-ignore>
+          <summary>Table of contents</summary>
+          <ul>
+            {toc.map((h) => (
+              <li class={`depth-${h.depth}`}>
+                <a href={`#${h.slug}`}>{h.text}</a>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )
+    }
+
     <slot />
   </article>
+
+  {
+    related.length > 0 && (
+      <section class="related">
+        <hr />
+        <h2>Related posts</h2>
+        <PostList posts={related} />
+      </section>
+    )
+  }
 
   <hr />
   <Giscus />
 </BaseLayout>
+
+<script>
+  // Copy button on every code block.
+  document.querySelectorAll<HTMLPreElement>('article pre').forEach((pre) => {
+    const button = document.createElement('button');
+    button.className = 'copy-code';
+    button.type = 'button';
+    button.textContent = 'copy';
+    button.addEventListener('click', async () => {
+      const code = pre.querySelector('code')?.innerText ?? pre.innerText;
+      await navigator.clipboard.writeText(code);
+      button.textContent = 'copied!';
+      setTimeout(() => (button.textContent = 'copy'), 1500);
+    });
+    pre.appendChild(button);
+  });
+</script>
 
 <style>
   article header h1 {
@@ -59,5 +168,120 @@ const fmt = new Intl.DateTimeFormat('en', {
     gap: 0.35rem;
     flex-wrap: wrap;
     margin: 0;
+  }
+
+  .series {
+    background: var(--bg-muted);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+  }
+
+  .series p {
+    margin: 0 0 0.4rem;
+  }
+
+  .series ol {
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+
+  .toc {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+  }
+
+  .toc summary {
+    cursor: pointer;
+    color: var(--text-muted);
+    font-weight: 550;
+  }
+
+  .toc ul {
+    list-style: none;
+    margin: 0.5rem 0 0.25rem;
+    padding: 0;
+  }
+
+  .toc li {
+    margin: 0.25rem 0;
+  }
+
+  .toc li.depth-3 {
+    padding-left: 1.25rem;
+  }
+
+  .related h2 {
+    margin-top: 0;
+  }
+</style>
+
+<style is:global>
+  /* Copy button on code blocks */
+  article pre {
+    position: relative;
+  }
+
+  article pre .copy-code {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    font-size: 0.72rem;
+    font-family: inherit;
+    color: var(--text-muted);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.1rem 0.5rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  article pre:hover .copy-code,
+  article pre .copy-code:focus-visible {
+    opacity: 1;
+  }
+
+  article pre .copy-code:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* Footnotes / citations (GitHub-flavored markdown [^1] syntax) */
+  article sup a {
+    text-decoration: none;
+    font-weight: 550;
+    padding: 0 0.1em;
+  }
+
+  article .footnotes {
+    margin-top: 2.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.88rem;
+    color: var(--text-muted);
+  }
+
+  article .footnotes ol {
+    padding-left: 1.25rem;
+  }
+
+  article .footnotes p {
+    margin: 0.25rem 0;
+  }
+
+  article .footnotes :target,
+  article sup:target a {
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    border-radius: 3px;
+  }
+
+  article [data-footnote-backref] {
+    text-decoration: none;
   }
 </style>

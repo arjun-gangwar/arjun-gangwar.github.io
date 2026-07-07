@@ -1,0 +1,36 @@
+---
+/**
+ * Shows a different image in light vs. dark mode — use for plots with
+ * white backgrounds that look harsh in dark mode.
+ *
+ * Usage (works in .astro pages and .mdx posts):
+ *   <ThemedImage light="/figures/plot-light.svg" dark="/figures/plot-dark.svg"
+ *                alt="Training loss curve" />
+ */
+interface Props {
+  light: string;
+  dark: string;
+  alt: string;
+  width?: number | string;
+  height?: number | string;
+}
+
+const { light, dark, alt, width, height } = Astro.props;
+---
+
+<img src={light} alt={alt} width={width} height={height} class="themed-light" />
+<img src={dark} alt={alt} width={width} height={height} class="themed-dark" />
+
+<style>
+  .themed-dark {
+    display: none;
+  }
+
+  :global(html[data-theme='dark']) .themed-light {
+    display: none;
+  }
+
+  :global(html[data-theme='dark']) .themed-dark {
+    display: block;
+  }
+</style>

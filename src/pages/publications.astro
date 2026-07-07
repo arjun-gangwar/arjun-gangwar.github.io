@@ -1,0 +1,120 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { PUBLICATIONS, bibtex } from '../data/publications';
+
+const byYear = new Map<number, typeof PUBLICATIONS>();
+for (const pub of PUBLICATIONS) {
+  if (!byYear.has(pub.year)) byYear.set(pub.year, []);
+  byYear.get(pub.year)!.push(pub);
+}
+const years = [...byYear.keys()].sort((a, b) => b - a);
+---
+
+<BaseLayout title="Publications" description="Publications by Arjun Gangwar.">
+  <h1>Publications</h1>
+  <p class="muted">
+    Also on <a
+      href="https://scholar.google.com/citations?user=FfOAhbsAAAAJ&hl=en"
+      >Google Scholar</a
+    >.
+  </p>
+  {
+    years.map((year) => (
+      <section>
+        <h2>{year}</h2>
+        <ul class="pubs">
+          {byYear.get(year)!.map((pub) => (
+            <li>
+              <p class="title">
+                {pub.arxiv ? (
+                  <a href={`https://arxiv.org/abs/${pub.arxiv}`}>{pub.title}</a>
+                ) : (
+                  pub.title
+                )}
+              </p>
+              <p class="authors muted">
+                {pub.authors.map((author, i) => (
+                  <>
+                    {i > 0 && ', '}
+                    {author === 'Arjun Gangwar' ? <strong>{author}</strong> : author}
+                  </>
+                ))}
+              </p>
+              <p class="links">
+                <span class="muted">{pub.venue}</span>
+                {pub.arxiv && (
+                  <a href={`https://arxiv.org/abs/${pub.arxiv}`}>arXiv</a>
+                )}
+                {(pub.pdf || pub.arxiv) && (
+                  <a href={pub.pdf ?? `https://arxiv.org/pdf/${pub.arxiv}`}>PDF</a>
+                )}
+                {pub.code && <a href={pub.code}>code</a>}
+                {pub.demo && <a href={pub.demo}>demo</a>}
+                <button class="bibtex-btn" data-bibtex={bibtex(pub)}>BibTeX</button>
+              </p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</BaseLayout>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.bibtex-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(btn.dataset.bibtex ?? '');
+      const original = btn.textContent;
+      btn.textContent = 'copied!';
+      setTimeout(() => (btn.textContent = original), 1500);
+    });
+  });
+</script>
+
+<style>
+  .pubs {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .pubs li {
+    margin-bottom: 1.4rem;
+  }
+
+  .pubs p {
+    margin: 0.1rem 0;
+  }
+
+  .title {
+    font-weight: 550;
+  }
+
+  .authors {
+    font-size: 0.9rem;
+  }
+
+  .links {
+    font-size: 0.85rem;
+    display: flex;
+    gap: 0.9rem;
+    align-items: baseline;
+    flex-wrap: wrap;
+  }
+
+  .bibtex-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    padding: 0.05rem 0.6rem;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .bibtex-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+</style>

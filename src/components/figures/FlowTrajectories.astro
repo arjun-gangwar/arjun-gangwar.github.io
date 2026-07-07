@@ -1,0 +1,166 @@
+---
+/**
+ * Interactive figure: optimal-transport flow-matching trajectories.
+ * Prior samples (t=0) move along straight OT paths toward two target
+ * clusters (t=1); the slider controls t. Self-contained vanilla JS —
+ * works on any static host. Import into .mdx posts.
+ */
+---
+
+<figure class="flow-fig">
+  <svg id="flow-svg" viewBox="0 0 600 300" role="img"
+    aria-label="Interactive visualization of flow matching trajectories"></svg>
+  <div class="controls">
+    <label for="flow-t">t = <span id="flow-t-value">0.00</span></label>
+    <input id="flow-t" type="range" min="0" max="1" step="0.01" value="0" />
+    <button id="flow-play" type="button">▶ play</button>
+  </div>
+  <figcaption class="muted">
+    Samples from a Gaussian prior (left) transported along straight
+    optimal-transport paths <em>x<sub>t</sub> = (1−t)x₀ + tx₁</em> to a
+    two-cluster target distribution (right). Drag the slider or press play.
+  </figcaption>
+</figure>
+
+<script>
+  const svg = document.getElementById('flow-svg');
+  const slider = document.getElementById('flow-t') as HTMLInputElement | null;
+  const readout = document.getElementById('flow-t-value');
+  const playBtn = document.getElementById('flow-play');
+
+  if (svg && slider && readout && playBtn) {
+    // Deterministic pseudo-random so the figure is stable across loads.
+    let seed = 42;
+    const rand = () => {
+      seed = (seed * 1103515245 + 12345) % 2147483648;
+      return seed / 2147483648;
+    };
+    const gauss = () =>
+      Math.sqrt(-2 * Math.log(1 - rand())) * Math.cos(2 * Math.PI * rand());
+
+    const N = 60;
+    const points = Array.from({ length: N }, (_, i) => {
+      const x0 = { x: 90 + gauss() * 28, y: 150 + gauss() * 38 };
+      const cluster = i % 2 === 0 ? { x: 500, y: 80 } : { x: 500, y: 220 };
+      const x1 = {
+        x: cluster.x + gauss() * 16,
+        y: cluster.y + gauss() * 20,
+      };
+      return { x0, x1 };
+    });
+
+    const ns = 'http://www.w3.org/2000/svg';
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+    // Faint full trajectories as context.
+    for (const { x0, x1 } of points) {
+      const line = document.createElementNS(ns, 'line');
+      line.setAttribute('x1', String(x0.x));
+      line.setAttribute('y1', String(x0.y));
+      line.setAttribute('x2', String(x1.x));
+      line.setAttribute('y2', String(x1.y));
+      line.setAttribute('class', 'traj');
+      svg.appendChild(line);
+    }
+
+    const dots = points.map(() => {
+      const c = document.createElementNS(ns, 'circle');
+      c.setAttribute('r', '3.5');
+      c.setAttribute('class', 'dot');
+      svg.appendChild(c);
+      return c;
+    });
+
+    const draw = (t: number) => {
+      readout.textContent = t.toFixed(2);
+      points.forEach(({ x0, x1 }, i) => {
+        dots[i]!.setAttribute('cx', String(lerp(x0.x, x1.x, t)));
+        dots[i]!.setAttribute('cy', String(lerp(x0.y, x1.y, t)));
+      });
+    };
+
+    slider.addEventListener('input', () => draw(Number(slider.value)));
+
+    let timer: ReturnType<typeof setInterval> | null = null;
+    playBtn.addEventListener('click', () => {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+        playBtn.textContent = '▶ play';
+        return;
+      }
+      playBtn.textContent = '⏸ pause';
+      timer = setInterval(() => {
+        let t = Number(slider.value) + 0.01;
+        if (t > 1) t = 0;
+        slider.value = String(t);
+        draw(t);
+      }, 30);
+    });
+
+    draw(0);
+  }
+</script>
+
+<style>
+  .flow-fig {
+    margin: 1.5rem 0;
+  }
+
+  svg {
+    width: 100%;
+    height: auto;
+    background: var(--bg-muted);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  svg :global(.traj) {
+    stroke: var(--text-muted);
+    stroke-width: 0.5;
+    opacity: 0.25;
+  }
+
+  svg :global(.dot) {
+    fill: var(--accent);
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .controls label {
+    font-variant-numeric: tabular-nums;
+    min-width: 5.5rem;
+  }
+
+  .controls input[type='range'] {
+    flex: 1;
+    accent-color: var(--accent);
+  }
+
+  .controls button {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    padding: 0.15rem 0.6rem;
+    cursor: pointer;
+  }
+
+  .controls button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  figcaption {
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+  }
+</style>

@@ -3,6 +3,7 @@ title: 'Notes on conditional flow matching for speech'
 description: 'A working introduction to flow matching and why it is a good fit for speech generation tasks.'
 date: 2026-07-01
 tags: [speech, generative-models, math]
+series: 'Flow matching for speech'
 ---
 
 Flow matching has quietly become one of the most practical training

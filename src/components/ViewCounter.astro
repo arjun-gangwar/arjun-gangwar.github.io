@@ -1,0 +1,28 @@
+---
+import { GOATCOUNTER_CODE } from '../consts';
+---
+
+{/* Fetches the public per-path count from GoatCounter. Requires "Allow adding
+    visitor counts on your website" to be enabled in GoatCounter settings.
+    Fails silently (stays hidden) if the API is unreachable or not enabled. */}
+<span id="view-counter" data-code={GOATCOUNTER_CODE} hidden>
+  · <span id="view-counter-n"></span> views
+</span>
+
+<script>
+  const wrapper = document.getElementById('view-counter');
+  const target = document.getElementById('view-counter-n');
+  const code = wrapper?.dataset.code;
+  if (wrapper && target && code) {
+    const path = encodeURIComponent(location.pathname.replace(/\/$/, ''));
+    fetch(`https://${code}.goatcounter.com/counter/${path}.json`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data?.count) {
+          target.textContent = data.count;
+          wrapper.hidden = false;
+        }
+      })
+      .catch(() => {});
+  }
+</script>

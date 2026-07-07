@@ -1,0 +1,50 @@
+---
+title: 'Flow matching, visualized'
+description: 'An interactive look at optimal-transport probability paths, plus a tour of what this blog can do: interactive figures, footnotes, and theme-aware images.'
+date: 2026-07-06
+tags: [speech, generative-models, math]
+series: 'Flow matching for speech'
+---
+
+import FlowTrajectories from '../../components/figures/FlowTrajectories.astro';
+import ThemedImage from '../../components/ThemedImage.astro';
+
+In the [previous post](/blog/flow-matching-notes) we looked at the
+conditional flow matching objective. The core idea is easier to *see* than
+to read: under the optimal-transport path, every sample just travels in a
+straight line from the prior to the data distribution[^1].
+
+## The trajectories
+
+Drag the slider to move time $t$ from the prior ($t=0$) to the target
+distribution ($t=1$):
+
+<FlowTrajectories />
+
+Each dot follows $x_t = (1-t)\,x_0 + t\,x_1$, so the target vector field is
+constant along the path: $u_t(x \mid x_1) = x_1 - x_0$. That constancy is
+exactly why so few ODE steps suffice at inference time[^2].
+
+## Theme-aware figures
+
+Plots exported from matplotlib usually have white backgrounds that glare in
+dark mode. This figure swaps variants with the site theme — try the toggle
+in the header:
+
+<ThemedImage
+  light="/figures/loss-curve-light.svg"
+  dark="/figures/loss-curve-dark.svg"
+  alt="Example training loss curve, rendered per theme"
+/>
+
+## Footnotes
+
+Footnotes use standard Markdown syntax and get styled as proper
+citations — click the marker to jump down, and the backlink to return.
+
+[^1]: Lipman et al., [*Flow Matching for Generative
+    Modeling*](https://arxiv.org/abs/2210.02747), ICLR 2023.
+
+[^2]: Tong et al., [*Improving and generalizing flow-based generative
+    models with minibatch optimal transport*](https://arxiv.org/abs/2302.00482),
+    TMLR 2024.

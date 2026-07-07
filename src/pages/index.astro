@@ -2,9 +2,28 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SocialLinks from '../components/SocialLinks.astro';
 import Updates from '../components/Updates.astro';
+import { SITE_TITLE, SITE_URL, SOCIALS } from '../consts';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: SITE_TITLE,
+  url: SITE_URL,
+  affiliation: {
+    '@type': 'Organization',
+    name: 'Indian Institute of Technology, Madras',
+  },
+  jobTitle: 'AI Researcher',
+  sameAs: [SOCIALS.scholar, SOCIALS.github, SOCIALS.linkedin, SOCIALS.twitter],
+};
 ---
 
 <BaseLayout>
+  <script
+    slot="head"
+    type="application/ld+json"
+    set:html={JSON.stringify(jsonLd)}
+  />
   <section class="intro">
     {/* Placeholder — drop your headshot at public/photo.jpg and change src */}
     <img

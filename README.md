@@ -18,14 +18,30 @@ Add a `.md` or `.mdx` file to `src/content/blog/`:
 ```yaml
 ---
 title: 'Post title'
-description: 'One-line summary (used in listings, RSS, search).'
+description: 'One-line summary (used in listings, RSS, search, OG cards).'
 date: 2026-07-07
 tags: [speech, math]
+series: 'Flow matching for speech'  # optional; links parts together
 draft: true   # remove to publish
 ---
 ```
 
-Math: `$inline$` and `$$display$$` (rendered at build time with KaTeX).
+Posts get automatically: reading time, table of contents (from `##`/`###`
+headings), related posts (by shared tags), a series box (if `series` is set),
+copy buttons on code blocks, a per-post Open Graph preview image
+(`/og/<slug>.png`, generated at build time), a view counter (needs
+"visitor counts" enabled in GoatCounter settings), and giscus comments.
+
+- Math: `$inline$` and `$$display$$` (rendered at build time with KaTeX)
+- Footnotes: `[^1]` markers with `[^1]: text` definitions, styled as citations
+- Interactive figures (`.mdx` posts): import any `.astro` component, e.g.
+  `src/components/figures/FlowTrajectories.astro`
+- Dark-mode-aware images: `<ThemedImage light="..." dark="..." alt="..." />`
+
+## Publications
+
+Edit `src/data/publications.ts` — grouped by year on `/publications`, with
+arXiv/PDF links and a copy-BibTeX button per entry.
 
 ## Site content
 
