@@ -43,12 +43,52 @@ copy buttons on code blocks, a per-post Open Graph preview image
 Edit `src/data/publications.ts` — grouped by year on `/publications`, with
 arXiv/PDF links and a copy-BibTeX button per entry.
 
-## Site content
+## Editing the landing page
 
-- Bio / landing page: `src/pages/index.astro`
-- News items: `src/data/updates.ts`
-- Social links, giscus and GoatCounter IDs: `src/consts.ts`
-- Headshot: drop `public/photo.jpg` and update the `src` in `index.astro`
+The landing page is `src/pages/index.astro`. The bio is plain HTML inside the
+`<BaseLayout>` block — edit the two `<p>` paragraphs directly (links, bold,
+etc. all work as normal HTML). The page pulls in three other pieces:
+
+- **Headshot**: currently the placeholder `public/photo.svg`. Drop your real
+  photo at `public/photo.jpg` and change the `<img src="/photo.svg">` to
+  `/photo.jpg` in `index.astro`. It renders at 150×150, so a square crop
+  (~300×300px or larger) looks best.
+- **Social links**: edit the `SOCIALS` object in `src/consts.ts` (email,
+  Scholar, GitHub, LinkedIn, X). Remove a line there to drop it from the
+  page; the display list itself is `src/components/SocialLinks.astro`.
+- **Name / one-line description** (used in the browser tab, meta tags, RSS,
+  and OG cards): `SITE_TITLE` and `SITE_DESCRIPTION` in `src/consts.ts`.
+
+## Editing the updates section
+
+News items live in `src/data/updates.ts` — an array rendered newest-first
+exactly in the order listed, so add new entries **at the top**:
+
+```ts
+export const UPDATES: Update[] = [
+  {
+    date: '2026-07-10',                     // ISO date; shown as "Jul 2026"
+    html: 'Our paper on X was accepted at <a href="https://interspeech2026.org">Interspeech 2026</a>!',
+  },
+  // ...older entries
+];
+```
+
+The `html` field is injected as-is, so inline tags like `<a>`, `<em>`,
+`<strong>` work. There's no limit, but the landing page shows all of them —
+prune old ones occasionally. Layout/styling is in
+`src/components/Updates.astro`.
+
+## Other content locations
+
+- Nav bar links: `src/components/Header.astro`
+- Footer: `src/components/Footer.astro`
+- Colors / fonts / dark-mode palette: CSS variables at the top of
+  `src/styles/global.css`
+- Publications: `src/data/publications.ts` (see below)
+
+After editing, check locally with `npm run dev`, then commit and push —
+GitHub Actions rebuilds and deploys automatically.
 
 ## One-time external setup
 
